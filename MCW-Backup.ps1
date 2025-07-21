@@ -31,26 +31,50 @@ param (
     # if(($FileType -ne "7z") -or ($FileType -ne "zip") -or ($FileType -ne "gzip") -or ($FileType -ne "bzip2") -or ($FileType -ne "tar")){
     # }
     
-    function Get-WorldList{
-        # $worlds stores all the folder objects inside the $minecraft_worlds_folder
-        $worlds =  @(Get-ChildItem -Path $minecraft_worlds_folder -Directory)
-        # $worldlist stores only the name and full path of each world founded
+    function Get-WorldList {
         $worldlist = @{}
-        # Iterates over $worlds for each folder and adds and element to $worldlist
-        foreach($item in $worlds) {
-            $folderName = $item.Name
-            #The full path of the world folder
+        foreach ($item in Get-ChildItem -Path $minecraft_worlds_folder -Directory) {
             $folderFullPath = $item.FullName
-            if($MinecraftVersion -eq "Bedrock"){
-                #Reads the content of levelname.txt toget the world name
-                $worldName =  Get-Content -Path "$folderFullPath\levelname.txt"
-            }elseif ($MinecraftVersion -eq "Java"){
-                $worldName = $folderName
+            $worldName      = ''
+    
+            switch ($MinecraftVersion) {
+    
+                'Bedrock' {
+                    # The real world name is the first line of levelname.txt
+                    $levelTxt = Join-Path -Path $folderFullPath -ChildPath 'levelname.txt'
+                    if (Test-Path -LiteralPath $levelTxt) {
+                        $worldName = (Get-Content -LiteralPath $levelTxt -First 1).Trim()
+                    }
+    
+                    # Fallback to the folder name if levelname.txt is missing / empty
+                    if (-not $worldName) { $worldName = $item.Name }
+                }
+    
+                'Java' {
+                    # For Java Edition the folder name *is* the world name
+                    $worldName = $item.Name
+                }
+    
+                default {
+                    # Future-proof: if some other edition string is ever passed
+                    $worldName = $item.Name
+                }
             }
-            
-            $worldlist.Add($worldName,$folderFullPath)
+    
+            # ---- Duplicate-name protection ------------------------------------
+            $uniqueName = $worldName
+            $i = 1
+            while ($worldlist.ContainsKey($uniqueName)) {
+                $uniqueName = "$worldName ($i)"
+                $i++
+            }
+            # -------------------------------------------------------------------
+    
+            # Add / overwrite entry (never throws on duplicates)
+            $worldlist[$uniqueName] = $folderFullPath
         }
-        $worldlist
+    
+        return $worldlist        # Hashtable: keys = names, values = paths
     }
     
     Write-Host -ForegroundColor Yellow "Searching for worlds in the local folder..."
