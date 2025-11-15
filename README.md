@@ -86,7 +86,7 @@ Non-interactive, specify XUID explicitly (useful in scheduled tasks):
 
 ## Troubleshooting
 
-- "No worlds were found!" â€” common causes:
+- "No worlds were found!" common causes:
     - The chosen `minecraftWorlds` folder does not exist or is inaccessible (permissions).
     - For Bedrock: the selected XUID folder may be empty (no world subfolders). If another XUID contains worlds, use `-NonInteractive` (the script will ignore empty candidates) or supply `-Xuid` for the correct XUID.
     - Make sure to run the script as the same Windows user who owns the Bedrock profile folders when checking `Users\<XUID>` entries.
