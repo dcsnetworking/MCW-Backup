@@ -36,7 +36,7 @@ Go and click on the green button "Code" and select the option "Download ZIP" or 
 
 #### Bedrock world folder detection (new behavior)
 
-  Starting with Bedrock 1.21.200, worlds now reside in a new folder layout:
+  Starting with Bedrock 1.21.120, worlds now reside in a new folder layout:
   
       %USERPROFILE%\AppData\Roaming\Minecraft Bedrock\Users\<XUID>\games\com.mojang\minecraftWorlds
     
@@ -97,7 +97,7 @@ Non-interactive, specify XUID explicitly (useful in scheduled tasks):
 
 ## Commit log for the current change
 
-- Prefer new Bedrock path (1.21.200) over legacy UWP path.
+- Prefer new Bedrock path (1.21.120) over legacy UWP path.
 - Add `-Xuid` parameter for explicit Bedrock user folder selection.
 - Add `-NonInteractive` switch and logic to automatically pick the best XUID:
     - Chooses the candidate with the newest world subfolder timestamp.
